@@ -93,6 +93,8 @@ namespace AIO_VPN
                             // Code to handle V2Ray Installer
                             Console.WriteLine("Installing V2ray");
                             Thread.Sleep(1000);
+                            Console.Clear();
+                            V2RayInstall();
                             break;
                         case "WireGuard":
                             // Code to handle WireGuard Installer
@@ -119,7 +121,7 @@ namespace AIO_VPN
         private static void OpenVPNInstall()
         {
             // URL : https://swupdate.openvpn.org/community/releases/OpenVPN-2.6.4-I001-amd64.msi
-
+            
             const string fileUrl = "https://cdn.discordapp.com/attachments/1090264607328829511/1111670639460352120/OpenVPN-2.6.4-I001-amd64.msi";
             string destinationPath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
@@ -145,7 +147,7 @@ namespace AIO_VPN
                 Console.Clear();
             }
 
-            #region Start OpenVPN Installer msi
+            #region Start OpenVPN Installer MSI
             
             AnsiConsole.MarkupLine("[grey]in Installer file, press on Customize and select[/] [green]OpenSSL Utilities [/][grey]then install the openVPN[/]\n");
 
@@ -166,11 +168,13 @@ namespace AIO_VPN
             #endregion
 
 
-
             AnsiConsole.MarkupLine("[green]OpenVPN[/] [grey]Installer is open. Finish installing then press any key to continue[/]");
             Console.ReadKey();
 
         }
+
+        
+
         private static void WebClientOnDownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
             if(e.ProgressPercentage <100)
