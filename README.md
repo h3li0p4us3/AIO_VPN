@@ -58,6 +58,7 @@ We would like to express our gratitude to the following individuals and projects
 
 - [h3li0p4us3](https://h3li0p4us3.github.io) - Initial project idea and guidance
 - [Spectre.Console](https://github.com/spectreconsole/spectre.console/) - Used library for user interface
+- [WgServerforWindows](https://github.com/micahmo/WgServerforWindows) - WireGuard server installer for windows
 
 ## Disclaimer
 
