@@ -105,6 +105,7 @@ namespace AIO_VPN
                             // Code to handle SoftEther VPN Installer
                             Console.WriteLine("Installing SoftEther VPN");
                             Thread.Sleep(1000);
+                            SoftEtherInstall();
                             Console.Clear();
                             break;
                         default:
@@ -127,7 +128,7 @@ namespace AIO_VPN
                 {
                     // URL : https://swupdate.openvpn.org/community/releases/OpenVPN-2.6.4-I001-amd64.msi
             
-                    const string fileUrl = "https://cdn.discordapp.com/attachments/1090264607328829511/1111670639460352120/OpenVPN-2.6.4-I001-amd64.msi";
+                    const string fileUrl = "https://swupdate.openvpn.org/community/releases/OpenVPN-2.6.4-I001-amd64.msi";
                     string destinationPath = Path.Combine(
                         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                         "AIO_VPN",
@@ -265,7 +266,7 @@ namespace AIO_VPN
                                 Thread.Sleep(2000);
                                 Console.Clear();
                             }
-                            #region Start WireGuard Installer MSI
+
 
                             try
                             {
@@ -283,12 +284,58 @@ namespace AIO_VPN
                                 Console.ReadKey();
                                 return;
                             }
-                            #endregion
                         }
         #endregion
-                
-                
 
+                #region SoftEther Install
+                // url : https://www.softether-download.com/files/softether/v4.41-9787-rtm-2023.03.14-tree/Windows/SoftEther_VPN_Server_and_VPN_Bridge/softether-vpnserver_vpnbridge-v4.41-9787-rtm-2023.03.14-windows-x86_x64-intel.exe
+                private static void SoftEtherInstall()
+                {
+                    const string fileUrl = "https://www.softether-download.com/files/softether/v4.41-9787-rtm-2023.03.14-tree/Windows/SoftEther_VPN_Server_and_VPN_Bridge/softether-vpnserver_vpnbridge-v4.41-9787-rtm-2023.03.14-windows-x86_x64-intel.exe";
+                    string destinationPath = Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                        "AIO_VPN",
+                        "softether-vpnserver_vpnbridge-v4.41-9787-rtm-2023.03.14-windows-x86_x64-intel.exe");
+
+                    var webClient = new WebClient();
+                    webClient.DownloadProgressChanged += WebClientOnDownloadProgressChanged;
+
+                    if (!File.Exists(destinationPath))
+                    {
+                        Console.WriteLine("Downloading file...");
+                        var downloadCompleted = new ManualResetEvent(false);
+                        webClient.DownloadFileAsync(new Uri(fileUrl), destinationPath);
+                        webClient.DownloadFileCompleted += (s, e) => downloadCompleted.Set();
+                        downloadCompleted.WaitOne();
+                        AnsiConsole.MarkupLine("[grey] Download Finished![/]");
+                        AnsiConsole.WriteLine("Press any key to continue ...");
+                        Console.ReadKey();
+                    }
+                    else
+                    {
+                        AnsiConsole.MarkupLine("[grey] No Need for download. file already exist![/]");
+                        Thread.Sleep(2000);
+                        Console.Clear();
+                    }
+
+                    try
+                    {
+                        // Start the process
+                        Process.Start(Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                        "AIO_VPN",
+                        "softether-vpnserver_vpnbridge-v4.41-9787-rtm-2023.03.14-windows-x86_x64-intel.exe"));
+                        AnsiConsole.WriteLine("Installer is open. Press any key to continue ...");
+                        Console.ReadKey();
+                    }
+                    catch (Exception ex)
+                    {
+                        AnsiConsole.MarkupLine($"[red]Error ->[/] {ex.Message}");
+                        Console.ReadKey();
+                        return;
+                    }
+                }
+        #endregion
 
         #endregion
 
