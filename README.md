@@ -1,4 +1,4 @@
-# All in One VPN Service Installer
+# All in One VPN Server Installer
 
 The **AIO VPN Installer** is a project that simplifies the installation process of VPN servers on Windows computers. It provides an easy and convenient way to set up multiple VPN services quickly.
 
@@ -11,7 +11,7 @@ The **AIO VPN Installer** is a project that simplifies the installation process 
 
 ## Requirements
 
-To run the VPN Service Installer, ensure that your system meets the following requirements:
+To run the VPN Server Installer, ensure that your system meets the following requirements:
 
 - Windows operating system (compatible with Windows 7 and above)
 - Sufficient disk space for installation
@@ -19,10 +19,9 @@ To run the VPN Service Installer, ensure that your system meets the following re
 
 ## Installation
 
-1. Download the latest release of the **All in One VPN Service Installer** from the [Releases](https://github.com/h3li0p4us3/AIO_VPN/releases) section.
-2. Double-click the downloaded installer file to start the installation process.
-3. Follow the on-screen instructions to complete the installation.
-4. Launch the **All in One VPN Service Installer** after installation.
+1. Download the latest release of the **AIO VPN Installer** from the [Releases](https://github.com/h3li0p4us3/AIO_VPN/releases) section.
+2. Double-click the downloaded compressed file and extract it.
+4. Launch the **AIO VPN Installer** after extracting files.
 
 ## Usage
 
@@ -34,7 +33,7 @@ To run the VPN Service Installer, ensure that your system meets the following re
 
 ## Troubleshooting
 
-If you encounter any issues during the installation or have questions about the VPN Service Installer, consider the following steps:
+If you encounter any issues during the installation or have questions about the VPN Server Installer, consider the following steps:
 
 - Check the [FAQ](https://discord.gg/VrseuAM8de) section in discord server for commonly asked questions.
 - Search the [issue tracker](https://github.com/h3li0p4us3/AIO_VPN/issues) for existing bug reports or open a new issue if your problem hasn't been reported yet.
