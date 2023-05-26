@@ -3,9 +3,12 @@ using Spectre.Console.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Spectre.Console.Extensions;
+using System.IO;
 
 namespace AIO_VPN
 {
@@ -37,13 +40,14 @@ namespace AIO_VPN
                 AnsiConsole.MarkupLine("[red]Environment does not support interaction.[/]");
                 return;
             }
-
-            // Confirmation
-            if (!AskConfirmation())
+            if(!AskConfirmation())
             {
                 return;
             }
 
+            Directory.CreateDirectory(Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "AIO_VPN"));
             // Ask the user for some different things
             WriteDivider("Strings");
             var name = AskName();
@@ -71,27 +75,30 @@ namespace AIO_VPN
                 switch (service)
                 {
                     case "OpenVPN":
-                        // Code to handle OpenVPN option
+                        // Code to handle OpenVPN Installer
                         Console.WriteLine("Installing openVPN");
                         Thread.Sleep(1000);
+                        Console.Clear();
+                        OpenVPNInstall();
+                        
                         break;
                     case "V2Ray":
-                        // Code to handle V2Ray option
+                        // Code to handle V2Ray Installer
                         Console.WriteLine("Installing V2ray");
                         Thread.Sleep(1000);
                         break;
                     case "WireGuard":
-                        // Code to handle WireGuard option
+                        // Code to handle WireGuard Installer
                         Console.WriteLine("Installing WireGuard");
                         Thread.Sleep(1000);
                         break;
                     case "SoftEther VPN":
-                        // Code to handle SoftEther VPN option
+                        // Code to handle SoftEther VPN Installer
                         Console.WriteLine("Installing SoftEther VPN");
                         Thread.Sleep(1000);
                         break;
                     default:
-                        // Code to handle unknown options
+                        // Code to handle unknown Installer
                         Console.WriteLine("Invalid choice: " + service);
                         Thread.Sleep(1000);
                         break;
@@ -100,6 +107,39 @@ namespace AIO_VPN
 
 
 
+        }
+
+        private static void OpenVPNInstall()
+        {
+            // URL : https://swupdate.openvpn.org/community/releases/OpenVPN-2.6.4-I001-amd64.msi
+
+            const string fileUrl = "https://cdn.discordapp.com/attachments/1090264607328829511/1111670639460352120/OpenVPN-2.6.4-I001-amd64.msi";
+            string destinationPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "AIO_VPN",
+                "OpenVPN-2.6.4-I001-amd64.msi");
+
+            var webClient = new WebClient();
+            webClient.DownloadProgressChanged += WebClientOnDownloadProgressChanged;
+            webClient.DownloadFileCompleted += WebClientOnDownloadCompleted;
+
+            Console.WriteLine("Downloading file...");
+            var downloadCompleted = new ManualResetEvent(false);
+            webClient.DownloadFileAsync(new Uri(fileUrl), destinationPath);
+            webClient.DownloadFileCompleted += (s, e) => downloadCompleted.Set();
+            downloadCompleted.WaitOne();
+
+            AnsiConsole.MarkupLine("[green]OpenVPN[/] [grey]Installed Successfully[/]");
+
+        }
+        private static void WebClientOnDownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
+        {
+            AnsiConsole.Markup($"\r Downloading [green]OpenVPN-2.6.4-I001-amd64.msi[/][grey] -> [/][blue]{e.ProgressPercentage}%[/]");
+        }
+
+        private static void WebClientOnDownloadCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+        {
+            Console.WriteLine("\nDownload completed!");
         }
 
         private static void WriteDivider(string text)
