@@ -175,7 +175,7 @@ namespace AIO_VPN
         {
             if(e.ProgressPercentage <100)
             {
-                AnsiConsole.Markup($"\r Downloading [green]OpenVPN-2.6.4-I001-amd64.msi[/][grey] -> [/][blue]{e.ProgressPercentage}%[/]");
+                AnsiConsole.Markup($"\r Downloading [green]a File[/][grey] -> [/][blue]{e.ProgressPercentage}%[/]");
             }
             else if (e.ProgressPercentage == 100)
             {
