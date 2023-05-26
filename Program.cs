@@ -26,6 +26,7 @@ namespace AIO_VPN
                 .AddItem("C#", 100, Color.Green)
                 );
             AnsiConsole.MarkupLine("[red]Initial project idea and guidance -> [/][green]h3li0p4us3[/]\n[red]V2ray Installer building and Testing ->[/][green] veler2313[/]");
+            AnsiConsole.WriteLine("Press any key to continue");
             Console.ReadKey();
         }
 
@@ -42,7 +43,8 @@ namespace AIO_VPN
             {
                 return;
             }
-
+            WriteDivider("Your Username");
+            var name = AskName();
             while (true)
             {
                 Console.Clear();
@@ -53,10 +55,9 @@ namespace AIO_VPN
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 "AIO_VPN"));
                 // Ask the user for some different things
-                WriteDivider("Strings");
-                var name = AskName();
+                
 
-                WriteDivider("Lists");
+                WriteDivider("VPN Installer");
                 string VPNServices = AskVPN();
 
 
@@ -97,6 +98,7 @@ namespace AIO_VPN
                             // Code to handle WireGuard Installer
                             Console.WriteLine("Installing WireGuard");
                             Thread.Sleep(1000);
+                            WireGuardInstall();
                             Console.Clear();
                             break;
                         case "SoftEther VPN":
@@ -118,137 +120,191 @@ namespace AIO_VPN
             
         }
 
-        private static void OpenVPNInstall()
-        {
-            // URL : https://swupdate.openvpn.org/community/releases/OpenVPN-2.6.4-I001-amd64.msi
+        #region Install VPN FUNCTIONS
+
+                #region OpenVPN Install
+                private static void OpenVPNInstall()
+                {
+                    // URL : https://swupdate.openvpn.org/community/releases/OpenVPN-2.6.4-I001-amd64.msi
             
-            const string fileUrl = "https://cdn.discordapp.com/attachments/1090264607328829511/1111670639460352120/OpenVPN-2.6.4-I001-amd64.msi";
-            string destinationPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "AIO_VPN",
-                "OpenVPN-2.6.4-I001-amd64.msi");
+                    const string fileUrl = "https://cdn.discordapp.com/attachments/1090264607328829511/1111670639460352120/OpenVPN-2.6.4-I001-amd64.msi";
+                    string destinationPath = Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                        "AIO_VPN",
+                        "OpenVPN-2.6.4-I001-amd64.msi");
 
-            var webClient = new WebClient();
-            webClient.DownloadProgressChanged += WebClientOnDownloadProgressChanged;
+                    var webClient = new WebClient();
+                    webClient.DownloadProgressChanged += WebClientOnDownloadProgressChanged;
 
-            if(!File.Exists(destinationPath))
-            {
-                Console.WriteLine("Downloading file...");
-                var downloadCompleted = new ManualResetEvent(false);
-                webClient.DownloadFileAsync(new Uri(fileUrl), destinationPath);
-                webClient.DownloadFileCompleted += (s, e) => downloadCompleted.Set();
-                downloadCompleted.WaitOne();
-                AnsiConsole.MarkupLine("[grey] Download Finished![/]");
-            }
-            else
-            {
-                AnsiConsole.MarkupLine("[grey] No Need for download. file already exist![/]");
-                Thread.Sleep(2000);
-                Console.Clear();
-            }
+                    if(!File.Exists(destinationPath))
+                    {
+                        Console.WriteLine("Downloading file...");
+                        var downloadCompleted = new ManualResetEvent(false);
+                        webClient.DownloadFileAsync(new Uri(fileUrl), destinationPath);
+                        webClient.DownloadFileCompleted += (s, e) => downloadCompleted.Set();
+                        downloadCompleted.WaitOne();
+                        AnsiConsole.MarkupLine("[grey] Download Finished![/]");
+                    }
+                    else
+                    {
+                        AnsiConsole.MarkupLine("[grey] No Need for download. file already exist![/]");
+                        Thread.Sleep(2000);
+                        Console.Clear();
+                    }
 
-            #region Start OpenVPN Installer MSI
             
-            AnsiConsole.MarkupLine("[grey]in Installer file, press on Customize and select[/] [green]OpenSSL Utilities [/][grey]then install the openVPN[/]\n");
+            
+                    AnsiConsole.MarkupLine("[grey]in Installer file, press on Customize and select[/] [green]OpenSSL Utilities [/][grey]then install the openVPN[/]\n");
 
-            try
-            {
-                // Start the process
-                Process.Start(Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "AIO_VPN",
-                "OpenVPN-2.6.4-I001-amd64.msi"));
-            }
-            catch (Exception ex)
-            {
-                AnsiConsole.MarkupLine($"[red]Error ->[/] {ex.Message}");
-                Console.ReadKey();
-                return;
-            }
-            #endregion
+                    try
+                    {
+                        // Start the process
+                        Process.Start(Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                        "AIO_VPN",
+                        "OpenVPN-2.6.4-I001-amd64.msi"));
+                    }
+                    catch (Exception ex)
+                    {
+                        AnsiConsole.MarkupLine($"[red]Error ->[/] {ex.Message}");
+                        Console.ReadKey();
+                        return;
+                    }
+            
 
 
-            AnsiConsole.MarkupLine("[green]OpenVPN[/] [grey]Installer is open. Finish installing then press any key to continue[/]");
-            Console.ReadKey();
+                    AnsiConsole.MarkupLine("[green]OpenVPN[/] [grey]Installer is open. Finish installing then press any key to continue[/]");
+                    Console.ReadKey();
 
-        }
+                }
         
+                #endregion
 
-        /*
-            i used Advanced Installer Architech to build an Installer for V2Ray
+                #region V2Ray Install
+                       
+                private static void V2RayInstall()
+                {
+                    // URL : https://github.com/v2fly/v2ray-core/releases/download/v5.4.1/v2ray-windows-64.zip
             
-            big thanks to veler2313 for Advanced Installer 
+                    const string fileUrl = "https://cdn.discordapp.com/attachments/1090264607328829511/1111696280490610718/V2Ray_Installer.exe";
+                    string destinationPath = Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                        "AIO_VPN",
+                        "V2Ray_Installer.exe");
 
-            i will update the project to extract files to a specific folder and add it to system environment so you can always put the new version url here.
-            
-        */
-        private static void V2RayInstall()
-        {
-            // URL : https://github.com/v2fly/v2ray-core/releases/download/v5.4.1/v2ray-windows-64.zip
-            
-            const string fileUrl = "https://cdn.discordapp.com/attachments/1090264607328829511/1111696280490610718/V2Ray_Installer.exe";
-            string destinationPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "AIO_VPN",
-                "V2Ray_Installer.exe");
+                    var webClient = new WebClient();
+                    webClient.DownloadProgressChanged += WebClientOnDownloadProgressChanged;
 
-            var webClient = new WebClient();
-            webClient.DownloadProgressChanged += WebClientOnDownloadProgressChanged;
-
-            if (!File.Exists(destinationPath))
-            {
-                Console.WriteLine("Downloading file...");
-                var downloadCompleted = new ManualResetEvent(false);
-                webClient.DownloadFileAsync(new Uri(fileUrl), destinationPath);
-                webClient.DownloadFileCompleted += (s, e) => downloadCompleted.Set();
-                downloadCompleted.WaitOne();
-                AnsiConsole.MarkupLine("[grey] Download Finished![/]");
-                AnsiConsole.WriteLine("Press any key to continue ...");
-                Console.ReadKey();
-            }
-            else
-            {
-                AnsiConsole.MarkupLine("[grey] No Need for download. file already exist![/]");
-                Thread.Sleep(2000);
-                Console.Clear();
-            }
-            #region Start V2Ray Installer EXE
+                    if (!File.Exists(destinationPath))
+                    {
+                        Console.WriteLine("Downloading file...");
+                        var downloadCompleted = new ManualResetEvent(false);
+                        webClient.DownloadFileAsync(new Uri(fileUrl), destinationPath);
+                        webClient.DownloadFileCompleted += (s, e) => downloadCompleted.Set();
+                        downloadCompleted.WaitOne();
+                        AnsiConsole.MarkupLine("[grey] Download Finished![/]");
+                        AnsiConsole.WriteLine("Press any key to continue ...");
+                        Console.ReadKey();
+                    }
+                    else
+                    {
+                        AnsiConsole.MarkupLine("[grey] No Need for download. file already exist![/]");
+                        Thread.Sleep(2000);
+                        Console.Clear();
+                    }
             
-            try
-            {
-                // Start the process
-                Process.Start(Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "AIO_VPN",
-                "V2Ray_Installer.exe"));
-                AnsiConsole.WriteLine("Installer is open. Press any key to continue ...");
-                Console.ReadKey();
-            }
-            catch (Exception ex)
-            {
-                AnsiConsole.MarkupLine($"[red]Error ->[/] {ex.Message}");
-                Console.ReadKey();
-                return;
-            }
-            #endregion
-        }
-        
+            
+                    try
+                    {
+                        // Start the process
+                        Process.Start(Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                        "AIO_VPN",
+                        "V2Ray_Installer.exe"));
+                        AnsiConsole.WriteLine("Installer is open. Press any key to continue ...");
+                        Console.ReadKey();
+                    }
+                    catch (Exception ex)
+                    {
+                        AnsiConsole.MarkupLine($"[red]Error ->[/] {ex.Message}");
+                        Console.ReadKey();
+                        return;
+                    }
+            
+                }
+        #endregion
+
+                #region WireGuard Install
+                        private static void WireGuardInstall()
+                        {
+                            // URL : https://github.com/micahmo/WgServerforWindows
+
+                            const string fileUrl = "https://github.com/micahmo/WgServerforWindows/releases/download/v2.0.10/WS4WSetup-2.0.10.exe";
+                            string destinationPath = Path.Combine(
+                                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                                "AIO_VPN",
+                                "WS4WSetup-2.0.10.exe");
+
+                            var webClient = new WebClient();
+                            webClient.DownloadProgressChanged += WebClientOnDownloadProgressChanged;
+
+                            if (!File.Exists(destinationPath))
+                            {
+                                Console.WriteLine("Downloading file...");
+                                var downloadCompleted = new ManualResetEvent(false);
+                                webClient.DownloadFileAsync(new Uri(fileUrl), destinationPath);
+                                webClient.DownloadFileCompleted += (s, e) => downloadCompleted.Set();
+                                downloadCompleted.WaitOne();
+                                AnsiConsole.MarkupLine("[grey] Download Finished![/]");
+                                AnsiConsole.WriteLine("Press any key to continue ...");
+                                Console.ReadKey();
+                            }
+                            else
+                            {
+                                AnsiConsole.MarkupLine("[grey] No Need for download. file already exist![/]");
+                                Thread.Sleep(2000);
+                                Console.Clear();
+                            }
+                            #region Start WireGuard Installer MSI
+
+                            try
+                            {
+                                // Start the process
+                                Process.Start(Path.Combine(
+                                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                                "AIO_VPN",
+                                "WS4WSetup-2.0.10.exe"));
+                                AnsiConsole.WriteLine("Installer is open. Press any key to continue ...");
+                                Console.ReadKey();
+                            }
+                            catch (Exception ex)
+                            {
+                                AnsiConsole.MarkupLine($"[red]Error ->[/] {ex.Message}");
+                                Console.ReadKey();
+                                return;
+                            }
+                            #endregion
+                        }
+        #endregion
+                
+                
+
+
+        #endregion
+
 
         private static void WebClientOnDownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
-            if(e.ProgressPercentage <100)
+            if (e.ProgressPercentage < 100)
             {
                 AnsiConsole.Markup($"\r Downloading [green]a File[/][grey] -> [/][blue]{e.ProgressPercentage}%[/]");
             }
             else if (e.ProgressPercentage == 100)
             {
-                
+
             }
-            
+
         }
-
-       
-
         private static void WriteDivider(string text)
         {
             AnsiConsole.WriteLine();
