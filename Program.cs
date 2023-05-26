@@ -23,12 +23,9 @@ namespace AIO_VPN
                 .FullSize()
                 .Width(60)
                 .ShowPercentage()
-
-                .AddItem("C#", 66.5, Color.Green)
-                .AddItem("Shell", 12.2, Color.Aqua)
-                .AddItem("C++", 21.3, Color.Blue)
+                .AddItem("C#", 100, Color.Green)
                 );
-
+            AnsiConsole.MarkupLine("[red]Initial project idea and guidance -> [/][green]h3li0p4us3[/]\n[red]V2ray Installer building and Testing ->[/][green] veler2313[/]");
             Console.ReadKey();
         }
 
@@ -100,22 +97,25 @@ namespace AIO_VPN
                             // Code to handle WireGuard Installer
                             Console.WriteLine("Installing WireGuard");
                             Thread.Sleep(1000);
+                            Console.Clear();
                             break;
                         case "SoftEther VPN":
                             // Code to handle SoftEther VPN Installer
                             Console.WriteLine("Installing SoftEther VPN");
                             Thread.Sleep(1000);
+                            Console.Clear();
                             break;
                         default:
                             // Code to handle unknown Installer
                             Console.WriteLine("Invalid choice: " + service);
                             Thread.Sleep(1000);
+                            Console.Clear();
                             break;
                     }
                 }
-
+                AboutProject();
             }
-
+            
         }
 
         private static void OpenVPNInstall()
@@ -172,7 +172,66 @@ namespace AIO_VPN
             Console.ReadKey();
 
         }
+        
 
+        /*
+            i used Advanced Installer Architech to build an Installer for V2Ray
+            
+            big thanks to veler2313 for Advanced Installer 
+
+            i will update the project to extract files to a specific folder and add it to system environment so you can always put the new version url here.
+            
+        */
+        private static void V2RayInstall()
+        {
+            // URL : https://github.com/v2fly/v2ray-core/releases/download/v5.4.1/v2ray-windows-64.zip
+            
+            const string fileUrl = "https://cdn.discordapp.com/attachments/1090264607328829511/1111696280490610718/V2Ray_Installer.exe";
+            string destinationPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "AIO_VPN",
+                "V2Ray_Installer.exe");
+
+            var webClient = new WebClient();
+            webClient.DownloadProgressChanged += WebClientOnDownloadProgressChanged;
+
+            if (!File.Exists(destinationPath))
+            {
+                Console.WriteLine("Downloading file...");
+                var downloadCompleted = new ManualResetEvent(false);
+                webClient.DownloadFileAsync(new Uri(fileUrl), destinationPath);
+                webClient.DownloadFileCompleted += (s, e) => downloadCompleted.Set();
+                downloadCompleted.WaitOne();
+                AnsiConsole.MarkupLine("[grey] Download Finished![/]");
+                AnsiConsole.WriteLine("Press any key to continue ...");
+                Console.ReadKey();
+            }
+            else
+            {
+                AnsiConsole.MarkupLine("[grey] No Need for download. file already exist![/]");
+                Thread.Sleep(2000);
+                Console.Clear();
+            }
+            #region Start V2Ray Installer EXE
+            
+            try
+            {
+                // Start the process
+                Process.Start(Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "AIO_VPN",
+                "V2Ray_Installer.exe"));
+                AnsiConsole.WriteLine("Installer is open. Press any key to continue ...");
+                Console.ReadKey();
+            }
+            catch (Exception ex)
+            {
+                AnsiConsole.MarkupLine($"[red]Error ->[/] {ex.Message}");
+                Console.ReadKey();
+                return;
+            }
+            #endregion
+        }
         
 
         private static void WebClientOnDownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
