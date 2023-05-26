@@ -56,7 +56,7 @@ This project is licensed under the [MIT License](https://tlo.mit.edu/learn-about
 
 We would like to express our gratitude to the following individuals and projects for their contributions and inspiration:
 
-- [Author Name](https://h3li0p4us3.github.io) - Initial project idea and guidance
+- [h3li0p4us3](https://h3li0p4us3.github.io) - Initial project idea and guidance
 - [Spectre.Console](https://github.com/spectreconsole/spectre.console/) - Used library for user interface
 
 ## Disclaimer
