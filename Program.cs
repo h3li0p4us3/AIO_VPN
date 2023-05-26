@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Spectre.Console.Extensions;
 using System.IO;
+using System.Diagnostics;
 
 namespace AIO_VPN
 {
@@ -34,78 +35,84 @@ namespace AIO_VPN
         static void Main(string[] args)
         {
 
-            // Check if we can accept key strokes
             if (!AnsiConsole.Profile.Capabilities.Interactive)
             {
                 AnsiConsole.MarkupLine("[red]Environment does not support interaction.[/]");
                 return;
             }
-            if(!AskConfirmation())
+
+            if (!AskConfirmation())
             {
                 return;
             }
 
-            Directory.CreateDirectory(Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "AIO_VPN"));
-            // Ask the user for some different things
-            WriteDivider("Strings");
-            var name = AskName();
-
-            WriteDivider("Lists");
-            string VPNServices = AskVPN();
-
-            
-
-            // Summary
-            AnsiConsole.WriteLine();
-            AnsiConsole.Write(new Rule("[yellow]Results[/]").RuleStyle("grey").LeftJustified());
-            AnsiConsole.Write(new Table().AddColumns("[grey]Question[/]", "[grey]Answer[/]")
-                .RoundedBorder()
-                .BorderColor(Color.Grey)
-                .AddRow("[grey]user Name[/]", name)
-                .AddRow("[grey]VPN Services[/]",VPNServices));
-            AnsiConsole.MarkupLine("[blue]press anykey on keyboard to start[/]");
-            Console.ReadKey();
-
-            string[] servicesArray = VPNServices.Split(new[] { ", " }, StringSplitOptions.None);
-
-            foreach (var service in servicesArray)
+            while (true)
             {
-                switch (service)
+                Console.Clear();
+                // Check if we can accept key strokes
+                
+
+                Directory.CreateDirectory(Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "AIO_VPN"));
+                // Ask the user for some different things
+                WriteDivider("Strings");
+                var name = AskName();
+
+                WriteDivider("Lists");
+                string VPNServices = AskVPN();
+
+
+
+                // Summary
+                AnsiConsole.WriteLine();
+                AnsiConsole.Write(new Rule("[yellow]Results[/]").RuleStyle("grey").LeftJustified());
+                AnsiConsole.Write(new Table().AddColumns("[grey]Question[/]", "[grey]Answer[/]")
+                    .RoundedBorder()
+                    .BorderColor(Color.Grey)
+                    .AddRow("[grey]user Name[/]", name)
+                    .AddRow("[grey]VPN Services[/]", VPNServices));
+                AnsiConsole.MarkupLine("[blue]press anykey on keyboard to start[/]");
+                Console.ReadKey();
+
+                string[] servicesArray = VPNServices.Split(new[] { ", " }, StringSplitOptions.None);
+
+                foreach (var service in servicesArray)
                 {
-                    case "OpenVPN":
-                        // Code to handle OpenVPN Installer
-                        Console.WriteLine("Installing openVPN");
-                        Thread.Sleep(1000);
-                        Console.Clear();
-                        OpenVPNInstall();
-                        
-                        break;
-                    case "V2Ray":
-                        // Code to handle V2Ray Installer
-                        Console.WriteLine("Installing V2ray");
-                        Thread.Sleep(1000);
-                        break;
-                    case "WireGuard":
-                        // Code to handle WireGuard Installer
-                        Console.WriteLine("Installing WireGuard");
-                        Thread.Sleep(1000);
-                        break;
-                    case "SoftEther VPN":
-                        // Code to handle SoftEther VPN Installer
-                        Console.WriteLine("Installing SoftEther VPN");
-                        Thread.Sleep(1000);
-                        break;
-                    default:
-                        // Code to handle unknown Installer
-                        Console.WriteLine("Invalid choice: " + service);
-                        Thread.Sleep(1000);
-                        break;
+                    switch (service)
+                    {
+                        case "OpenVPN":
+                            // Code to handle OpenVPN Installer
+                            Console.WriteLine("Installing openVPN");
+                            Thread.Sleep(1000);
+                            Console.Clear();
+                            OpenVPNInstall();
+
+                            break;
+                        case "V2Ray":
+                            // Code to handle V2Ray Installer
+                            Console.WriteLine("Installing V2ray");
+                            Thread.Sleep(1000);
+                            break;
+                        case "WireGuard":
+                            // Code to handle WireGuard Installer
+                            Console.WriteLine("Installing WireGuard");
+                            Thread.Sleep(1000);
+                            break;
+                        case "SoftEther VPN":
+                            // Code to handle SoftEther VPN Installer
+                            Console.WriteLine("Installing SoftEther VPN");
+                            Thread.Sleep(1000);
+                            break;
+                        default:
+                            // Code to handle unknown Installer
+                            Console.WriteLine("Invalid choice: " + service);
+                            Thread.Sleep(1000);
+                            break;
+                    }
                 }
+
             }
-
-
 
         }
 
@@ -121,26 +128,63 @@ namespace AIO_VPN
 
             var webClient = new WebClient();
             webClient.DownloadProgressChanged += WebClientOnDownloadProgressChanged;
-            webClient.DownloadFileCompleted += WebClientOnDownloadCompleted;
 
-            Console.WriteLine("Downloading file...");
-            var downloadCompleted = new ManualResetEvent(false);
-            webClient.DownloadFileAsync(new Uri(fileUrl), destinationPath);
-            webClient.DownloadFileCompleted += (s, e) => downloadCompleted.Set();
-            downloadCompleted.WaitOne();
+            if(!File.Exists(destinationPath))
+            {
+                Console.WriteLine("Downloading file...");
+                var downloadCompleted = new ManualResetEvent(false);
+                webClient.DownloadFileAsync(new Uri(fileUrl), destinationPath);
+                webClient.DownloadFileCompleted += (s, e) => downloadCompleted.Set();
+                downloadCompleted.WaitOne();
+                AnsiConsole.MarkupLine("[grey] Download Finished![/]");
+            }
+            else
+            {
+                AnsiConsole.MarkupLine("[grey] No Need for download. file already exist![/]");
+                Thread.Sleep(2000);
+                Console.Clear();
+            }
 
-            AnsiConsole.MarkupLine("[green]OpenVPN[/] [grey]Installed Successfully[/]");
+            #region Start OpenVPN Installer msi
+            
+            AnsiConsole.MarkupLine("[grey]in Installer file, press on Customize and select[/] [green]OpenSSL Utilities [/][grey]then install the openVPN[/]\n");
+
+            try
+            {
+                // Start the process
+                Process.Start(Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "AIO_VPN",
+                "OpenVPN-2.6.4-I001-amd64.msi"));
+            }
+            catch (Exception ex)
+            {
+                AnsiConsole.MarkupLine($"[red]Error ->[/] {ex.Message}");
+                Console.ReadKey();
+                return;
+            }
+            #endregion
+
+
+
+            AnsiConsole.MarkupLine("[green]OpenVPN[/] [grey]Installer is open. Finish installing then press any key to continue[/]");
+            Console.ReadKey();
 
         }
         private static void WebClientOnDownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
-            AnsiConsole.Markup($"\r Downloading [green]OpenVPN-2.6.4-I001-amd64.msi[/][grey] -> [/][blue]{e.ProgressPercentage}%[/]");
+            if(e.ProgressPercentage <100)
+            {
+                AnsiConsole.Markup($"\r Downloading [green]OpenVPN-2.6.4-I001-amd64.msi[/][grey] -> [/][blue]{e.ProgressPercentage}%[/]");
+            }
+            else if (e.ProgressPercentage == 100)
+            {
+                
+            }
+            
         }
 
-        private static void WebClientOnDownloadCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
-        {
-            Console.WriteLine("\nDownload completed!");
-        }
+       
 
         private static void WriteDivider(string text)
         {
@@ -154,12 +198,10 @@ namespace AIO_VPN
             {
                 AnsiConsole.MarkupLine("Ok... :(");
                 Thread.Sleep(2000);
-                Console.Clear();
                 return true;
             }
             AnsiConsole.MarkupLine("Thank you :))");
             Thread.Sleep(2000);
-            Console.Clear();
             
             return true;
         }
