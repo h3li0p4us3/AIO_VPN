@@ -78,12 +78,6 @@ if you want to support my projects, you can use crypto, if you are persian you c
 
 <br/>  
 
-<br/>  
-
-<div align="center">
-<img src="https://komarev.com/ghpvc/?username=h3li0p4us3&&style=flat-square" align="center" />
-</div>  
-  
 
 <br/>  
 
